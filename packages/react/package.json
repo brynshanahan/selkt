@@ -1,0 +1,19 @@
+{
+  "name": "@selkt/react",
+  "description": "Hooks for selectable global stores",
+  "authors": "brynshanahan",
+  "version": "1.0.0",
+  "main": "dist/main/index.js",
+  "module": "dist/module/index.js",
+  "umd": "dist/umd/client.js",
+  "umdMin": "dist/umd/client.min.js",
+  "types": "dist/module/index.d.ts",
+  "sideEffects": false,
+  "files": [
+    "dist/"
+  ],
+  "peerDependencies": {
+    "@selkt/core": "^1.0.0",
+    "react": "^17.0.1"
+  }
+}
