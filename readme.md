@@ -82,5 +82,5 @@ export default function App() {
 }
 ```
 
-- [Vanilla](./packages/core/readme.md)
-- [Hooks](./packages/react/readme.md)
+- [Vanilla](/packages/core/readme.md)
+- [Hooks](/packages/react/readme.md)
