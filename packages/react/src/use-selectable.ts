@@ -53,6 +53,3 @@ export function useSelectableSuspense<
     })
   }
 }
-
-let store = new Selectable(0)
-useSelectable(store)
