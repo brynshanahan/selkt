@@ -1,14 +1,23 @@
 import { useEffect, useState } from 'react'
-import { strictEqual, Callback, SelectableInterface } from '@selectable/core'
+import {
+  strictEqual,
+  Callback,
+  SelectableInterface,
+  Selectable,
+} from '@selkt/core'
 
-const ret = (v) => v
+const ret: <T>(arg: T) => T = (v) => v
 
-export function useSelectable<S, T = S>(
-  store: SelectableInterface<S> | undefined,
-  selector?: (arg: S) => T,
+export function useSelectable<
+  Store extends SelectableInterface<TState>,
+  TState,
+  TSlice = TState
+>(
+  store: Store | undefined,
+  selector?: (arg: TState) => TSlice,
   equalityCheck = strictEqual
-): T | undefined {
-  let sel = selector ?? ret
+): TSlice | undefined {
+  let sel = selector ?? (ret as (arg: TState) => TSlice)
   let [state, set] = useState(store ? sel(store.state) : undefined)
 
   /* eslint-disable */
@@ -24,10 +33,11 @@ export function useSelectable<S, T = S>(
   return state
 }
 
-export function useSelectableSuspense<V, K extends SelectableInterface<T>, T>(
-  store: K,
-  selector: Callback<T, V>
-) {
+export function useSelectableSuspense<
+  Value,
+  Store extends SelectableInterface<T>,
+  T
+>(store: Store, selector: Callback<T, Value>) {
   let value
   try {
     value = selector(store.state)
@@ -43,3 +53,6 @@ export function useSelectableSuspense<V, K extends SelectableInterface<T>, T>(
     })
   }
 }
+
+let store = new Selectable(0)
+useSelectable(store)

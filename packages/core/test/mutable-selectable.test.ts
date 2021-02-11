@@ -97,14 +97,14 @@ describe('Selectable', () => {
       count: 0,
     })
 
-    let sub = store.select((state) => state.count, callback)
+    let unsub = store.select((state) => state.count, callback)
 
     store.set((state) => {
       state.count++
       state.count++
     })
 
-    sub()
+    unsub()
 
     store.set((state) => {
       state.count++

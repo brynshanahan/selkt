@@ -19,7 +19,7 @@ function configure(pkg, env, target) {
   const isUmd = target === 'umd'
   const isModule = target === 'module'
   const isCommonJs = target === 'cjs'
-  let name = pkg.name.replace('@selectable/', '')
+  let name = pkg.name.replace('@selkt/', '')
   const input = `packages/${name}/src/index.ts`
   const deps = []
     .concat(pkg.dependencies ? Object.keys(pkg.dependencies) : [])
@@ -66,7 +66,7 @@ function configure(pkg, env, target) {
     }),
 
     // Register Node.js builtins for browserify compatibility.
-    builtins(),
+    // builtins(),
 
     // Use Babel to transpile the result, limiting it to the source code.
     babel({
@@ -198,6 +198,9 @@ const mods = (env) =>
       return factory(folderName, { env })
     })
   )
+
+// console.log(mods('production').map((mod) => mod.output))
+// process.exit()
 
 export default mods
 
