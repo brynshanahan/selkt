@@ -2,19 +2,25 @@
   "name": "@selkt/react",
   "description": "Hooks for selectable global stores",
   "authors": "brynshanahan",
-  "version": "1.0.1",
-  "main": "dist/main/index.js",
-  "module": "dist/module/index.js",
-  "umd": "dist/umd/client.js",
-  "umdMin": "dist/umd/client.min.js",
-  "types": "dist/module/index.d.ts",
+  "version": "1.0.7",
+  "main": "dist/index.js",
+  "module": "dist/index.es.js",
+  "umd": "dist/selkt-react.js",
+  "umdMin": "dist/selkt-react.min.js",
+  "typings": "dist/index.d.ts",
   "sideEffects": false,
   "files": [
     "dist/"
   ],
+  "scripts": {
+    "publish": "npm publish --scope=public"
+  },
   "peerDependencies": {
     "@selkt/core": "^1.0.0",
     "react": "^17.0.1"
+  },
+  "umdGlobals": {
+    "react": "React"
   },
   "devDependencies": {
     "@types/react": "^17.0.1"

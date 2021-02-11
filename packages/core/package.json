@@ -2,16 +2,19 @@
   "name": "@selkt/core",
   "description": "Global stores",
   "authors": "brynshanahan",
-  "version": "1.0.1",
-  "main": "dist/main/index.js",
-  "module": "dist/module/index.js",
-  "umd": "dist/umd/client.js",
-  "umdMin": "dist/umd/client.min.js",
-  "types": "dist/module/index.d.ts",
+  "version": "1.0.7",
+  "main": "dist/index.js",
+  "module": "dist/index.es.js",
+  "umd": "dist/selkt-core.js",
+  "umdMin": "dist/selkt-core.min.js",
+  "typings": "dist/index.d.ts",
   "sideEffects": false,
   "files": [
     "dist/"
   ],
+  "scripts": {
+    "publish": "npm publish --scope=public"
+  },
   "peerDependencies": {
     "immer": "^8.0.1"
   }

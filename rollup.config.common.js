@@ -121,7 +121,7 @@ function configure(pkg, env, target) {
       onwarn,
       output: {
         format: 'umd',
-        dir: `packages/${name}/${folder(isProd ? pkg.umdMin : pkg.umd)}`,
+        file: `packages/${name}/${isProd ? pkg.umdMin : pkg.umd}`,
         exports: 'named',
         name: startCase(name).replace(/ /g, ''),
         globals: pkg.umdGlobals,
@@ -139,7 +139,7 @@ function configure(pkg, env, target) {
       onwarn,
       output: [
         {
-          dir: `packages/${name}/${folder(pkg.main)}`,
+          file: `packages/${name}/${pkg.main}`,
           format: 'cjs',
           exports: 'named',
           sourcemap: true,
@@ -161,7 +161,7 @@ function configure(pkg, env, target) {
       onwarn,
       output: [
         {
-          dir: `packages/${name}/${folder(pkg.module)}`,
+          file: `packages/${name}/${pkg.module}`,
           format: 'es',
           sourcemap: true,
         },
@@ -203,9 +203,3 @@ const mods = (env) =>
 // process.exit()
 
 export default mods
-
-function folder(file) {
-  let parts = file.split('/')
-  parts.pop()
-  return parts.join('/')
-}
