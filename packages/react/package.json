@@ -3,11 +3,10 @@
   "description": "Hooks for selectable global stores",
   "authors": "brynshanahan",
   "version": "1.0.8",
-  "main": "dist/index.js",
-  "module": "dist/index.es.js",
-  "umd": "dist/selkt-react.js",
-  "umdMin": "dist/selkt-react.min.js",
-  "typings": "dist/index.d.ts",
+  "main": "dist/main/index.js",
+  "module": "dist/module/index.es.js",
+  "umd": "dist/umd/selkt-react.js",
+  "umdMin": "dist/umd/selkt-react.min.js",
   "sideEffects": false,
   "files": [
     "dist/"
