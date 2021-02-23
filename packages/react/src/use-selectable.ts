@@ -1,12 +1,8 @@
 import { useEffect, useState } from 'react'
-import {
-  strictEqual,
-  Callback,
-  SelectableInterface,
-  Selectable,
-} from '@selkt/core'
+import { strictEqual, Callback, SelectableInterface } from '@selkt/core'
 
 const ret: <T>(arg: T) => T = (v) => v
+type NonNullable<T> = Exclude<T, null | undefined>
 
 export function useSelectable<
   Store extends SelectableInterface<TState>,
@@ -20,7 +16,6 @@ export function useSelectable<
   let sel = selector ?? (ret as (arg: TState) => TSlice)
   let [state, set] = useState(store ? sel(store.state) : undefined)
 
-  /* eslint-disable */
   useEffect(() => {
     let current = store ? sel(store.state) : undefined
     if (!equalityCheck(current, state)) set(current)
@@ -28,21 +23,19 @@ export function useSelectable<
       return store.select(sel, set, equalityCheck)
     }
   })
-  /* eslint-enable */
 
   return state
 }
-
 export function useSelectableSuspense<
   Value,
   Store extends SelectableInterface<T>,
   T
->(store: Store, selector: Callback<T, Value>) {
+>(store: Store, selector: Callback<T, Value>): NonNullable<Value> {
   let value
   try {
     value = selector(store.state)
   } catch (e) {}
-  if (value === undefined) {
+  if (value === undefined || value === null) {
     throw new Promise<void>((resolve) => {
       let off = store.select(selector, (value) => {
         if (value !== undefined) {
@@ -52,4 +45,5 @@ export function useSelectableSuspense<
       })
     })
   }
+  return value as NonNullable<Value>
 }

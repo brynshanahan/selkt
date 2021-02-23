@@ -79,7 +79,7 @@ describe('MutableSelectable', () => {
 
 describe('Selectable', () => {
   it('Immediately calls handler when created', () => {
-    let callback = jest.fn()
+    let callback = jest.fn((arg) => {})
 
     let store = new Selectable({
       count: 0,
