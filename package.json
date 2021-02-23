@@ -1,6 +1,6 @@
 {
   "name": "selkt",
-  "version": "1.0.7",
+  "version": "1.0.17",
   "description": "",
   "main": "index.js",
   "scripts": {
@@ -8,7 +8,7 @@
     "build": "rollup --config ./rollup.config.dev.js",
     "watch": "rollup --config ./rollup.config.dev.js --watch",
     "dev": "npm run watch",
-    "publish": "cd ./packages/core && npm run publish && cd ../react && npm run publish"
+    "publish": "node ./scripts/publish"
   },
   "keywords": [],
   "author": "",

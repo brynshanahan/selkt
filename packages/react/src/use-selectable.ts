@@ -1,14 +1,14 @@
 import { useEffect, useState } from 'react'
-import {
-  strictEqual,
-  Callback,
-  SelectableInterface,
-  MutableSelectable,
-} from '@selkt/core'
+import { strictEqual, Callback, SelectableInterface } from '@selkt/core'
 
 const ret: <T>(arg: T) => T = (v) => v
-type NonNullable<T> = Exclude<T, null | undefined>
-
+type DeepRequired<T> = T extends object
+  ? Required<
+      {
+        [K in keyof T]: NonNullable<DeepRequired<T[K]>>
+      }
+    >
+  : T
 export function useSelectable<TState, TSlice = TState>(
   store: SelectableInterface<TState> | undefined,
   selector?: (arg: TState) => TSlice,
@@ -29,15 +29,15 @@ export function useSelectable<TState, TSlice = TState>(
 }
 export function useSelectableSuspense<TState, TSlice = TState>(
   store: SelectableInterface<TState>,
-  selector: Callback<TState, TSlice>
+  selector: Callback<DeepRequired<TState>, TSlice>
 ): NonNullable<TSlice> {
   let value
   try {
-    value = selector(store.state)
+    value = selector((store.state as unknown) as DeepRequired<TState>)
   } catch (e) {}
   if (value === undefined || value === null) {
     throw new Promise<void>((resolve) => {
-      let off = store.select(selector, (value) => {
+      let off = store.select(selector as any, (value) => {
         if (value !== undefined) {
           off()
           resolve()
