@@ -1,15 +1,16 @@
 import { useEffect, useState } from 'react'
-import { strictEqual, Callback, SelectableInterface } from '@selkt/core'
+import {
+  strictEqual,
+  Callback,
+  SelectableInterface,
+  MutableSelectable,
+} from '@selkt/core'
 
 const ret: <T>(arg: T) => T = (v) => v
 type NonNullable<T> = Exclude<T, null | undefined>
 
-export function useSelectable<
-  Store extends SelectableInterface<TState>,
-  TState,
-  TSlice = TState
->(
-  store: Store | undefined,
+export function useSelectable<TState, TSlice = TState>(
+  store: SelectableInterface<TState> | undefined,
   selector?: (arg: TState) => TSlice,
   equalityCheck = strictEqual
 ): TSlice | undefined {
@@ -26,11 +27,10 @@ export function useSelectable<
 
   return state
 }
-export function useSelectableSuspense<
-  Value,
-  Store extends SelectableInterface<T>,
-  T
->(store: Store, selector: Callback<T, Value>): NonNullable<Value> {
+export function useSelectableSuspense<TState, TSlice = TState>(
+  store: SelectableInterface<TState>,
+  selector: Callback<TState, TSlice>
+): NonNullable<TSlice> {
   let value
   try {
     value = selector(store.state)
@@ -45,5 +45,5 @@ export function useSelectableSuspense<
       })
     })
   }
-  return value as NonNullable<Value>
+  return value as NonNullable<TSlice>
 }
