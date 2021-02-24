@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "module": "ESNext",
+    "module": "esnext",
     "lib": ["es2020"],
     "moduleResolution": "node",
     "esModuleInterop": true,
