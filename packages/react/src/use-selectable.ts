@@ -10,7 +10,12 @@ type DeepRequired<T> = T extends object
     >
   : T
 export function useSelectable<TState, TSlice = TState>(
-  store: SelectableInterface<TState> | undefined,
+  store: SelectableInterface<TState>,
+  selector?: (arg: TState) => TSlice,
+  equalityCheck?: (arg1: TSlice, arg2: TSlice) => boolean
+): TSlice
+export function useSelectable<TState, TSlice = TState>(
+  store?: SelectableInterface<TState> | undefined,
   selector?: (arg: TState) => TSlice,
   equalityCheck = strictEqual
 ): TSlice | undefined {
