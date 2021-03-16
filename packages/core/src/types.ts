@@ -6,7 +6,7 @@ type CancelSub = () => void
 export type SelectableInterface<T> = {
   select: <V>(
     selector: Callback<T, V>,
-    onChange: Callback2Opt<V | undefined>,
+    onChange: Callback2Opt<V>,
     equalityCheck?: Callback2<V, boolean>
   ) => CancelSub
   state: T
