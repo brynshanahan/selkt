@@ -47,7 +47,7 @@ let initialState = {
   time: Date.now()
 }
 
-let store = new MutableSelectable(initialState)
+let store = new Selectable(initialState)
 
 setInterval(() => {
   store.set(state: Draft<State> => {
