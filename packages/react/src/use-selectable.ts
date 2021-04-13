@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useLayoutEffect, useState } from 'react'
 import { strictEqual, Callback, SelectableInterface } from '@selkt/core'
 
 const ret: <T>(arg: T) => T = (v) => v
@@ -22,6 +22,10 @@ export function useSelectable<TState, TSlice = TState>(
   let sel = selector ?? (ret as (arg: TState) => TSlice)
   let [state, set] = useState(store ? sel(store.state) : undefined)
 
+  useLayoutEffect(() => {
+    let current = store ? sel(store.state) : undefined
+    if (!equalityCheck(current, state)) set(current)
+  }, [])
   useEffect(() => {
     let current = store ? sel(store.state) : undefined
     if (!equalityCheck(current, state)) set(current)
