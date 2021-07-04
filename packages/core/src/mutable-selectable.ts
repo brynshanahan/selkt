@@ -1,4 +1,4 @@
-import { strictEqual } from './equality-checks'
+import { shallowEqualArray, strictEqual } from './equality-checks'
 import type {
   Callback,
   Callback2,
@@ -39,6 +39,7 @@ export class MutableSelectable<T> implements SelectableInterface<T> {
     onChange: Callback2Opt<V>,
     equalityCheck: Callback2<V, boolean> = strictEqual
   ) {
+    // Check if the function requests more than one param
     const shouldMemo = onChange.length > 1
     let prev: V
     try {

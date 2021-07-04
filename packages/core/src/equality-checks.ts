@@ -1,13 +1,19 @@
-export function strictEqual(a: any, b: any) {
+export function strictEqual<T1 extends any, T2 extends any>(a: T1, b: T2) {
   return a === b
 }
 
-export function shallowEqualArray(a: any[], b: any[]) {
+export function shallowEqualArray<Arr extends any[], Arr2 extends any[]>(
+  a: Arr,
+  b: Arr2
+) {
   if (a.length !== b.length) return false
   return a.every((item, index) => b[index] === item)
 }
 
-export function shallowEqual(a: { [k: string]: any }, b: { [k: string]: any }) {
+export function shallowEqual<
+  T1 extends { [k: string]: any },
+  T2 extends { [k: string]: any }
+>(a: T1, b: T2) {
   let aKeys = Object.keys(a)
   let bKeys = Object.keys(b)
 
@@ -22,7 +28,10 @@ export function shallowEqual(a: { [k: string]: any }, b: { [k: string]: any }) {
   return true
 }
 
-export function deepEqual(a: { [k: string]: any }, b: { [k: string]: any }) {
+export function deepEqual<
+  T1 extends { [k: string]: any },
+  T2 extends { [k: string]: any }
+>(a: T1, b: T2) {
   let aKeys = Object.keys(a)
   let bKeys = Object.keys(b)
 
