@@ -39,8 +39,13 @@ export class MutableSelectable<T> implements SelectableInterface<T> {
     onChange: Callback2Opt<V>,
     equalityCheck: Callback2<V, boolean> = strictEqual
   ) {
-    // Check if the function requests more than one param
-    const shouldMemo = onChange.length > 1
+    /* 
+    We pass in the previos state if the onChange callback has at least 2 arguments or no arguments.
+    This is because functions that use the ...args operator will report as having 0 arguments
+    eg.
+      (function(...args) {}).length === 0
+     */
+    const shouldMemo = onChange.length > 1 || onChange.length === 0
     let prev: V
     try {
       prev = selector(this.state)
