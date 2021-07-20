@@ -2,12 +2,15 @@ export function strictEqual<T1 extends any, T2 extends any>(a: T1, b: T2) {
   return a === b
 }
 
-export function shallowEqualArray<Arr extends any[], Arr2 extends any[]>(
-  a: Arr,
-  b: Arr2
-) {
+export function shallowEqualArray<
+  Arr extends ArrayLike<any>,
+  Arr2 extends ArrayLike<any>
+>(a: Arr, b: Arr2) {
   if (a.length !== b.length) return false
-  return a.every((item, index) => b[index] === item)
+  for (let i = 0; i < a.length; i++) {
+    if (a[i] !== b[i]) return false
+  }
+  return true
 }
 
 export function shallowEqual<
