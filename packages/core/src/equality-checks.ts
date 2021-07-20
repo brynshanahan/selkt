@@ -6,6 +6,8 @@ export function shallowEqualArray<
   Arr extends ArrayLike<any>,
   Arr2 extends ArrayLike<any>
 >(a: Arr, b: Arr2) {
+  if (!a && !b) return true
+  if (!a !== !b) return false
   if (a.length !== b.length) return false
   for (let i = 0; i < a.length; i++) {
     if (a[i] !== b[i]) return false

@@ -1,4 +1,4 @@
-import { MutableSelectable, Selectable } from '../src'
+import { MutableSelectable, Selectable, shallowEqualArray } from '../src'
 
 describe('MutableSelectable', () => {
   it('Immediately calls handler when created', () => {
@@ -11,7 +11,7 @@ describe('MutableSelectable', () => {
     store.select((state) => state.count, callback)
 
     expect(callback).toBeCalledTimes(1)
-    expect(callback).toBeCalledWith(0)
+    expect(callback).toBeCalledWith(0, undefined)
   })
 
   it('Accepts different equality functions', () => {
@@ -58,8 +58,8 @@ describe('MutableSelectable', () => {
     })
 
     expect(callback).toBeCalledTimes(2)
-    expect(callback).toBeCalledWith(0)
-    expect(callback).toBeCalledWith(2)
+    expect(callback).toBeCalledWith(0, undefined)
+    expect(callback).toBeCalledWith(2, 0)
   })
   it('Mutates values', () => {
     let callback = jest.fn()
@@ -74,6 +74,33 @@ describe('MutableSelectable', () => {
     })
 
     expect(state.count).toEqual(1)
+  })
+
+  it('Runs immediately with equality assertions', () => {
+    let callback = jest.fn()
+    let state = { count: 0, likes: 0 }
+
+    let store = new MutableSelectable(state)
+
+    store.select(
+      (state) => [state.count, state.likes],
+      callback,
+      shallowEqualArray
+    )
+
+    store.set((state) => {
+      state.count++
+      state.likes = 10
+    })
+    store.set((state) => {
+      state.count = 1
+      state.likes = 10
+    })
+
+    expect(state.count).toEqual(1)
+    expect(callback).toBeCalledTimes(2)
+    expect(callback).toBeCalledWith([0, 0], undefined)
+    expect(callback).toBeCalledWith([1, 10], [0, 0])
   })
 })
 
@@ -111,8 +138,8 @@ describe('Selectable', () => {
     })
 
     expect(callback).toBeCalledTimes(2)
-    expect(callback).toBeCalledWith(0)
-    expect(callback).toBeCalledWith(2)
+    expect(callback).toBeCalledWith(0, undefined)
+    expect(callback).toBeCalledWith(2, 0)
   })
   it(`Doesn't mutate values`, () => {
     let state = { count: 0 }
