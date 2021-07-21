@@ -19,8 +19,10 @@ export function shallowEqual<
   T1 extends { [k: string]: any },
   T2 extends { [k: string]: any }
 >(a: T1, b: T2) {
-  let aKeys = Object.keys(a)
-  let bKeys = Object.keys(b)
+  if (!!a !== !!b) return false
+
+  let aKeys = a ? Object.keys(a) : []
+  let bKeys = b ? Object.keys(b) : []
 
   if (aKeys.length !== bKeys.length) return false
 
@@ -37,14 +39,16 @@ export function deepEqual<
   T1 extends { [k: string]: any },
   T2 extends { [k: string]: any }
 >(a: T1, b: T2) {
-  let aKeys = Object.keys(a)
-  let bKeys = Object.keys(b)
+  if (!!a !== !!b) return false
+
+  let aKeys = a ? Object.keys(a) : []
+  let bKeys = b ? Object.keys(b) : []
 
   if (aKeys.length !== bKeys.length) return false
 
   for (let key of aKeys) {
     if (typeof a[key] === 'object' && typeof b[key] === 'object') {
-      if (!deepEqual(a[key], b['key'])) {
+      if (!deepEqual(a[key], b[key])) {
         return false
       }
     } else {

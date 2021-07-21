@@ -1,4 +1,42 @@
-import { MutableSelectable, Selectable, shallowEqualArray } from '../src'
+import {
+  deepEqual,
+  MutableSelectable,
+  Selectable,
+  shallowEqual,
+  shallowEqualArray,
+} from '../src'
+
+describe('equalityChecks', () => {
+  test('deepEqual checks correctly', () => {
+    expect(
+      deepEqual({ a: { b: { c: true } } }, { a: { b: { c: true } } })
+    ).toBe(true)
+    expect(
+      deepEqual({ a: { b: { c: false } } }, { a: { b: { c: true } } })
+    ).toBe(false)
+    expect(deepEqual([{}], [{}])).toBe(true)
+    expect(deepEqual({}, undefined)).toBe(false)
+    expect(deepEqual({}, { test: true })).toBe(false)
+  })
+
+  test('shallowEqualArray checks correctly', () => {
+    const a = {}
+    expect(shallowEqualArray([1, 2, 3], [1, 2, 3])).toBe(true)
+    expect(shallowEqualArray([], [1, 2, 3])).toBe(false)
+    expect(shallowEqualArray([a], [a])).toBe(true)
+    expect(shallowEqualArray([{}], [{}])).toBe(false)
+    expect(shallowEqualArray([{}], undefined)).toBe(false)
+    expect(shallowEqualArray([true, false], [false, true])).toBe(false)
+  })
+
+  test('shallowEqual checks correctly', () => {
+    expect(shallowEqual({}, {})).toBe(true)
+    expect(shallowEqual({}, undefined)).toBe(false)
+    expect(shallowEqual({ a: true }, { a: true })).toBe(true)
+    expect(shallowEqual({ a: false, test: false }, { a: true })).toBe(false)
+    expect(shallowEqual({ a: false, test: false }, undefined)).toBe(false)
+  })
+})
 
 describe('MutableSelectable', () => {
   it('Immediately calls handler when created', () => {
