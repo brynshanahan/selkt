@@ -1,6 +1,9 @@
 import { useEffect, useLayoutEffect, useState } from 'react'
 import { strictEqual, Callback, SelectableInterface } from '@selkt/core'
 
+const isoLayoutEffect = // @ts-ignore
+  typeof window === 'undefined' ? () => {} : useLayoutEffect
+
 const ret: <T>(arg: T) => T = (v) => v
 type DeepRequired<T> = T extends object
   ? Required<
@@ -22,7 +25,7 @@ export function useSelectable<TState, TSlice = TState>(
   let sel = selector ?? (ret as (arg: TState) => TSlice)
   let [state, set] = useState(store ? sel(store.state) : undefined)
 
-  useLayoutEffect(() => {
+  isoLayoutEffect(() => {
     let current = store ? sel(store.state) : undefined
     if (!equalityCheck(current, state)) set(current)
   }, [])
@@ -30,7 +33,16 @@ export function useSelectable<TState, TSlice = TState>(
     let current = store ? sel(store.state) : undefined
     if (!equalityCheck(current, state)) set(current)
     if (store) {
-      return store.select(sel, set, equalityCheck)
+      return store.select(
+        sel,
+        (slice) => {
+          // We have to check here to make sure this isn't run when the selectable is setup
+          if (!equalityCheck(current, slice)) {
+            set(slice)
+          }
+        },
+        equalityCheck
+      )
     }
   })
 
@@ -42,7 +54,7 @@ export function useSelectableSuspense<TState, TSlice = TState>(
 ): NonNullable<TSlice> {
   let value
   try {
-    value = selector((store.state as unknown) as DeepRequired<TState>)
+    value = selector(store.state as unknown as DeepRequired<TState>)
   } catch (e) {}
   if (value === undefined || value === null) {
     throw new Promise<void>((resolve) => {

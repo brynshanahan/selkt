@@ -1,7 +1,9 @@
 {
   "compilerOptions": {
     "module": "esnext",
-    "lib": ["es2020"],
+    "lib": [
+      "es2020"
+    ],
     "moduleResolution": "node",
     "esModuleInterop": true,
     "noEmitOnError": false,
@@ -15,6 +17,9 @@
     "suppressImplicitAnyIndexErrors": true,
     "target": "ES2020"
   },
+  "include": [
+    "packages",
+  ],
   "exclude": [
     "node_modules"
   ],

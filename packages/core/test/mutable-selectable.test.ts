@@ -25,7 +25,6 @@ describe('equalityChecks', () => {
     expect(shallowEqualArray([], [1, 2, 3])).toBe(false)
     expect(shallowEqualArray([a], [a])).toBe(true)
     expect(shallowEqualArray([{}], [{}])).toBe(false)
-    expect(shallowEqualArray([{}], undefined)).toBe(false)
     expect(shallowEqualArray([true, false], [false, true])).toBe(false)
   })
 
@@ -115,6 +114,33 @@ describe('MutableSelectable', () => {
   })
 
   it('Runs immediately with equality assertions', () => {
+    let callback = jest.fn()
+    let state = { count: 0, likes: 0 }
+
+    let store = new MutableSelectable(state)
+
+    store.select(
+      (state) => [state.count, state.likes],
+      callback,
+      shallowEqualArray
+    )
+
+    store.set((state) => {
+      state.count++
+      state.likes = 10
+    })
+    store.set((state) => {
+      state.count = 1
+      state.likes = 10
+    })
+
+    expect(state.count).toEqual(1)
+    expect(callback).toBeCalledTimes(2)
+    expect(callback).toBeCalledWith([0, 0], undefined)
+    expect(callback).toBeCalledWith([1, 10], [0, 0])
+  })
+
+  it('Respects equality functions', () => {
     let callback = jest.fn()
     let state = { count: 0, likes: 0 }
 

@@ -18,8 +18,9 @@ export function shallowEqualArray<
 export function shallowEqual<
   T1 extends { [k: string]: any },
   T2 extends { [k: string]: any }
->(a: T1, b: T2) {
+>(a?: T1, b?: T2) {
   if (!!a !== !!b) return false
+  if (!a || !b) return a === b
 
   let aKeys = a ? Object.keys(a) : []
   let bKeys = b ? Object.keys(b) : []
@@ -38,8 +39,9 @@ export function shallowEqual<
 export function deepEqual<
   T1 extends { [k: string]: any },
   T2 extends { [k: string]: any }
->(a: T1, b: T2) {
+>(a?: T1, b?: T2) {
   if (!!a !== !!b) return false
+  if (!a || !b) return a === b
 
   let aKeys = a ? Object.keys(a) : []
   let bKeys = b ? Object.keys(b) : []

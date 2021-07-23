@@ -8,12 +8,12 @@
     "build": "rollup --config ./rollup.config.dev.js",
     "watch": "rollup --config ./rollup.config.dev.js --watch",
     "dev": "npm run watch",
-    "pub": "node ./scripts/publish"
+    "pub": "node ./scripts/publish",
+    "test": "jest"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "dependencies": {},
   "workspaces": [
     "packages/*"
   ],
