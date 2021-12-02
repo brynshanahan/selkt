@@ -2,7 +2,8 @@
   "compilerOptions": {
     "module": "esnext",
     "lib": [
-      "es2020"
+      "es2020",
+      "dom"
     ],
     "moduleResolution": "node",
     "esModuleInterop": true,
@@ -10,7 +11,7 @@
     "composite": true,
     "allowSyntheticDefaultImports": true,
     "declaration": true,
-    "jsx": "preserve",
+    "jsx": "react-jsx",
     "resolveJsonModule": true,
     "sourceMap": true,
     "strict": true,
