@@ -4,10 +4,10 @@ import {
   Selectable,
   shallowEqual,
   shallowEqualArray,
-} from '../src'
+} from "../src"
 
-describe('equalityChecks', () => {
-  test('deepEqual checks correctly', () => {
+describe("equalityChecks", () => {
+  test("deepEqual checks correctly", () => {
     expect(
       deepEqual({ a: { b: { c: true } } }, { a: { b: { c: true } } })
     ).toBe(true)
@@ -19,7 +19,7 @@ describe('equalityChecks', () => {
     expect(deepEqual({}, { test: true })).toBe(false)
   })
 
-  test('shallowEqualArray checks correctly', () => {
+  test("shallowEqualArray checks correctly", () => {
     const a = {}
     expect(shallowEqualArray([1, 2, 3], [1, 2, 3])).toBe(true)
     expect(shallowEqualArray([], [1, 2, 3])).toBe(false)
@@ -28,7 +28,7 @@ describe('equalityChecks', () => {
     expect(shallowEqualArray([true, false], [false, true])).toBe(false)
   })
 
-  test('shallowEqual checks correctly', () => {
+  test("shallowEqual checks correctly", () => {
     expect(shallowEqual({}, {})).toBe(true)
     expect(shallowEqual({}, undefined)).toBe(false)
     expect(shallowEqual({ a: true }, { a: true })).toBe(true)
@@ -37,8 +37,8 @@ describe('equalityChecks', () => {
   })
 })
 
-describe('MutableSelectable', () => {
-  it('Immediately calls handler when created', () => {
+describe("MutableSelectable", () => {
+  it("Immediately calls handler when created", () => {
     let callback = jest.fn()
 
     let store = new MutableSelectable({
@@ -51,7 +51,7 @@ describe('MutableSelectable', () => {
     expect(callback).toBeCalledWith(0, undefined)
   })
 
-  it('Accepts different equality functions', () => {
+  it("Accepts different equality functions", () => {
     let callback = jest.fn(console.log)
 
     let store = new MutableSelectable(0)
@@ -74,7 +74,7 @@ describe('MutableSelectable', () => {
     expect(callback).toBeCalledWith(0)
     expect(callback).toBeCalledWith(2)
   })
-  it('Cancels subscriptions', () => {
+  it("Cancels subscriptions", () => {
     let callback = jest.fn()
 
     let store = new MutableSelectable({
@@ -98,7 +98,7 @@ describe('MutableSelectable', () => {
     expect(callback).toBeCalledWith(0, undefined)
     expect(callback).toBeCalledWith(2, 0)
   })
-  it('Mutates values', () => {
+  it("Mutates values", () => {
     let callback = jest.fn()
     let state = { count: 0 }
 
@@ -113,7 +113,7 @@ describe('MutableSelectable', () => {
     expect(state.count).toEqual(1)
   })
 
-  it('Runs immediately with equality assertions', () => {
+  it("Runs immediately with equality assertions", () => {
     let callback = jest.fn()
     let state = { count: 0, likes: 0 }
 
@@ -140,13 +140,13 @@ describe('MutableSelectable', () => {
     expect(callback).toBeCalledWith([1, 10], [0, 0])
   })
 
-  it('Respects equality functions', () => {
+  it("Respects equality functions", () => {
     let callback = jest.fn()
-    let state = { count: 0, likes: 0 }
+    let state = { count: 0, likes: 0, users: [{ id: 1 }, { id: 2 }] }
 
     let store = new MutableSelectable(state)
 
-    store.select(
+    const firstListener = store.select(
       (state) => [state.count, state.likes],
       callback,
       shallowEqualArray
@@ -161,15 +161,49 @@ describe('MutableSelectable', () => {
       state.likes = 10
     })
 
+    firstListener()
     expect(state.count).toEqual(1)
     expect(callback).toBeCalledTimes(2)
     expect(callback).toBeCalledWith([0, 0], undefined)
     expect(callback).toBeCalledWith([1, 10], [0, 0])
+
+    const secondCallback = jest.fn()
+
+    store.select(
+      (state) => state.users.map((user) => user.id),
+      secondCallback,
+      (a, b) => {
+        const same = shallowEqualArray(a, b)
+        console.log({ a, b, same })
+        return same
+      }
+    )
+
+    store.set((state) => {
+      state.users = []
+    })
+
+    store.set((state) => {
+      state.users = []
+    })
+
+    store.set((state) => {
+      state.users = [{ id: 1 }, { id: 2 }]
+    })
+
+    store.set((state) => {
+      state.users = [{ id: 1 }, { id: 2 }]
+    })
+
+    // select is called immediately
+    expect(secondCallback).toBeCalledTimes(3)
+    expect(secondCallback).toBeCalledWith([1, 2], undefined)
+    expect(secondCallback).toBeCalledWith([], [1, 2])
   })
 })
 
-describe('Selectable', () => {
-  it('Immediately calls handler when created', () => {
+describe("Selectable", () => {
+  it("Immediately calls handler when created", () => {
     let callback = jest.fn((arg) => {})
 
     let store = new Selectable({
@@ -181,7 +215,7 @@ describe('Selectable', () => {
     expect(callback).toBeCalledTimes(1)
     expect(callback).toBeCalledWith(0)
   })
-  it('Cancels subscriptions', () => {
+  it("Cancels subscriptions", () => {
     let callback = jest.fn()
 
     let store = new Selectable({
