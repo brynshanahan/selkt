@@ -140,6 +140,21 @@ describe("MutableSelectable", () => {
     expect(callback).toBeCalledWith([1, 10], [0, 0])
   })
 
+  it("Uses default check when passed undefined as an equalityCheck", () => {
+    let store = new MutableSelectable({ test: 0 })
+    let callback = jest.fn(() => console.log("test"))
+
+    store.select((state) => state.test, callback, undefined)
+
+    expect(callback).toBeCalledTimes(1)
+
+    store.set((state) => {
+      state.test = 1
+    })
+
+    expect(callback).toBeCalledTimes(2)
+  })
+
   it("Respects equality functions", () => {
     let callback = jest.fn()
     let state = { count: 0, likes: 0, users: [{ id: 1 }, { id: 2 }] }

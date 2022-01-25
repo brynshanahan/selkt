@@ -1,1 +1,1 @@
-export { useSelectable, useSelectableSuspense } from './use-selectable'
+export { useSelectable } from "./use-selectable"

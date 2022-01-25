@@ -1,10 +1,10 @@
-import { shallowEqualArray, strictEqual } from './equality-checks'
+import { shallowEqualArray, strictEqual } from "./equality-checks"
 import type {
   Callback,
   Callback2,
   Callback2Opt,
   SelectableInterface,
-} from './types'
+} from "./types"
 
 export class MutableSelectable<T> implements SelectableInterface<T> {
   private listeners = new Set<Callback<T>>()
@@ -27,7 +27,7 @@ export class MutableSelectable<T> implements SelectableInterface<T> {
   set(updater: Callback<T, T | undefined | void>) {
     let result = updater(this.state)
 
-    if (typeof result !== 'undefined') {
+    if (typeof result !== "undefined") {
       this.state = result
     }
 
@@ -47,21 +47,11 @@ export class MutableSelectable<T> implements SelectableInterface<T> {
      */
     const shouldMemo = onChange.length > 1 || onChange.length === 0
     let prev: V
-    try {
-      prev = selector(this.state)
-    } catch (e) {
-      // @ts-ignore
-      prev = undefined
-    }
+    prev = selector(this.state)
     shouldMemo ? onChange(prev, undefined) : onChange(prev)
     return this.subscribe((state) => {
       let current: V
-      try {
-        current = selector(state)
-      } catch (e) {
-        // @ts-ignore
-        current = undefined
-      }
+      current = selector(state)
       if (!equalityCheck(prev, current)) {
         let memo = undefined
         if (shouldMemo) {

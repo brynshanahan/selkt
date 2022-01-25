@@ -111,7 +111,7 @@ describe(`useSelectable`, () => {
 
     const ExampleComponent = () => {
       const state = useSelectable(store, selector, shallowEqualArray)
-      onRender()
+      onRender(state)
 
       return createElement("div", {}, state[0])
     }
@@ -154,5 +154,44 @@ describe(`useSelectable`, () => {
     })
 
     expect(selector).toBeCalledTimes(8)
+  })
+
+  it("Picks out the right value", () => {
+    const store = new Selectable({ test: { value: 0 } })
+
+    const ExampleComponent = () => {
+      const state = useSelectable(store, (state) => state.test.value)
+
+      return createElement("div", {}, state)
+    }
+
+    const { container, unmount } = render(createElement(ExampleComponent, {}))
+
+    expect(container).toBeTruthy()
+    expect(container.querySelector("div")?.textContent).toBe("0")
+
+    act(() => {
+      store.set((state) => {
+        state.test.value++
+      })
+    })
+
+    expect(container.querySelector("div")?.textContent).toBe("1")
+
+    act(() => {
+      store.set((state) => {
+        state.test.value++
+      })
+    })
+
+    expect(container.querySelector("div")?.textContent).toBe("2")
+
+    act(() => {
+      store.set((state) => {
+        state.test.value = 3
+      })
+    })
+
+    expect(container.querySelector("div")?.textContent).toBe("3")
   })
 })
