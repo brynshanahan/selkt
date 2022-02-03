@@ -10,13 +10,24 @@ export class MutableSelectable<T> implements SelectableInterface<T> {
   private listeners = new Set<Callback<T>>()
   state: T
   version: number = 0
+  flushing: false | (() => any) = false
   constructor(initialState: T) {
     this.state = initialState
   }
-  runUpdate() {
-    this.listeners.forEach((listener) => {
-      listener(this.state)
-    })
+  flush(callback?: () => any) {
+    if (callback) {
+      if (!this.flushing) {
+        this.flushing = callback
+      }
+      callback()
+    }
+
+    if (!this.flushing || this.flushing === callback) {
+      this.listeners.forEach((listener) => {
+        listener(this.state)
+      })
+      this.flushing = false
+    }
   }
   subscribe(callback: Callback<T>) {
     this.listeners.add(callback)
@@ -32,7 +43,7 @@ export class MutableSelectable<T> implements SelectableInterface<T> {
     }
 
     this.version++
-    this.runUpdate()
+    this.flush()
   }
   select<V>(
     selector: Callback<T, V>,

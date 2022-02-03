@@ -198,6 +198,7 @@ describe("MutableSelectable", () => {
       state.users = []
     })
 
+    // this update is ignored
     store.set((state) => {
       state.users = []
     })
@@ -214,6 +215,37 @@ describe("MutableSelectable", () => {
     expect(secondCallback).toBeCalledTimes(3)
     expect(secondCallback).toBeCalledWith([1, 2], undefined)
     expect(secondCallback).toBeCalledWith([], [1, 2])
+  })
+
+  it("only flushes once when nesting flush calls", () => {
+    let callback = jest.fn()
+    let state = { count: 0, likes: 0, users: [{ id: 1 }, { id: 2 }] }
+
+    let store = new MutableSelectable(state)
+
+    const listener = store.select((state) => state, callback)
+
+    store.flush(() => {
+      store.set((state) => {
+        state.likes++
+      })
+
+      store.set((state) => {
+        state.count++
+      })
+
+      store.set((state) => {
+        state.users.push({ id: 3 })
+      })
+    })
+
+    expect(store.state).toEqual({
+      count: 1,
+      likes: 1,
+      users: [{ id: 1 }, { id: 2 }, { id: 3 }],
+    })
+    expect(callback).toBeCalledTimes(1)
+    listener()
   })
 })
 
@@ -264,5 +296,35 @@ describe("Selectable", () => {
     })
 
     expect(state.count).toEqual(0)
+  })
+  it("only flushes once when nesting flush calls", () => {
+    let callback = jest.fn()
+    let state = { count: 0, likes: 0, users: [{ id: 1 }, { id: 2 }] }
+
+    let store = new Selectable(state)
+
+    const listener = store.select((state) => state, callback)
+
+    store.flush(() => {
+      store.set((state) => {
+        state.likes++
+      })
+
+      store.set((state) => {
+        state.count++
+      })
+
+      store.set((state) => {
+        state.users.push({ id: 3 })
+      })
+    })
+
+    expect(store.state).toEqual({
+      count: 1,
+      likes: 1,
+      users: [{ id: 1 }, { id: 2 }, { id: 3 }],
+    })
+    expect(callback).toBeCalledTimes(1)
+    listener()
   })
 })

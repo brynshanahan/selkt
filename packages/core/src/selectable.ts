@@ -9,7 +9,7 @@ export class Selectable<T> extends MutableSelectable<T> {
     if (change !== this.state) {
       this.state = change as T
       this.version++
-      this.runUpdate()
+      this.flush()
     }
   }
 }
