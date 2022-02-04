@@ -23,10 +23,10 @@ export class MutableSelectable<T> implements SelectableInterface<T> {
     }
 
     if (!this.flushing || this.flushing === callback) {
-      this.listeners.forEach((listener) => {
-        listener(this.state)
-      })
       this.flushing = false
+      for (let listener of this.listeners) {
+        listener(this.state)
+      }
     }
   }
   subscribe(callback: Callback<T>) {

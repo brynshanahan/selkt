@@ -303,7 +303,8 @@ describe("Selectable", () => {
 
     let store = new Selectable(state)
 
-    const listener = store.select((state) => state, callback)
+    store.select((state) => state, callback)
+    expect(callback).toBeCalledTimes(1)
 
     store.flush(() => {
       store.set((state) => {
@@ -324,7 +325,84 @@ describe("Selectable", () => {
       likes: 1,
       users: [{ id: 1 }, { id: 2 }, { id: 3 }],
     })
+    expect(callback).toBeCalledTimes(2)
+  })
+
+  it("changes in a running flush should trigger a new update", () => {
+    let callback = jest.fn((val) => {})
+
+    let state = { count: 0 }
+
+    let store = new Selectable(state)
+
+    store.select((state) => state.count, callback)
+
+    let divisibleByTwoCallback = jest.fn((divisibleByTwo) => {
+      if (divisibleByTwo) {
+        store.set((state) => {
+          state.count++
+        })
+      }
+    })
+
+    store.select(
+      (state) => state.count % 2 === 0 && state.count !== 0,
+      divisibleByTwoCallback
+    )
+
     expect(callback).toBeCalledTimes(1)
-    listener()
+
+    store.set((state) => {
+      state.count++
+    })
+    store.set((state) => {
+      state.count++
+    })
+
+    expect(store.state).toEqual({
+      count: 3,
+    })
+    expect(callback).toBeCalledTimes(4)
+
+    store.flush(() => {
+      store.set((state) => {
+        state.count++
+      })
+      expect(callback).toBeCalledTimes(4)
+
+      store.set((state) => {
+        state.count++
+        state.count++
+      })
+      expect(callback).toBeCalledTimes(4)
+    })
+
+    expect(store.state).toEqual({
+      count: 7,
+    })
+    expect(callback).toBeCalledWith(7)
+    expect(callback).toBeCalledTimes(6)
+  })
+
+  it("runs updates when returning undefined", () => {
+    let callback = jest.fn()
+    let state = { value: {} }
+
+    let store = new Selectable(state)
+
+    store.select(
+      (state) => state.value,
+      (a, b) => callback(a, b)
+    )
+    expect(callback).toBeCalledTimes(1)
+
+    store.set((state) => {
+      state.value = undefined
+    })
+
+    expect(store.state).toEqual({ value: undefined })
+    expect(callback).toBeCalledTimes(2)
+    expect(callback).toHaveBeenNthCalledWith(1, state.value, undefined)
+    expect(callback).toHaveBeenNthCalledWith(2, undefined, state.value)
   })
 })
