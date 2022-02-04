@@ -2,7 +2,7 @@
   "name": "@selkt/react",
   "description": "Hooks for selectable global stores",
   "authors": "brynshanahan",
-  "version": "1.0.31",
+  "version": "1.0.32",
   "main": "dist/main/index.js",
   "module": "dist/module/index.es.js",
   "umd": "dist/umd/selkt-react.js",
