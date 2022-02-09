@@ -31,9 +31,12 @@ export class MutableSelectable<T> implements SelectableInterface<T> {
   }
   subscribe(callback: Callback<T>) {
     this.listeners.add(callback)
-    return () => {
-      this.listeners.delete(callback)
-    }
+    return Object.assign(
+      () => {
+        this.listeners.delete(callback)
+      },
+      { update: () => callback(this.state) }
+    )
   }
   set(updater: Callback<T, T | undefined | void>) {
     let result = updater(this.state)

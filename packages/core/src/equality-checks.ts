@@ -5,11 +5,11 @@ export function strictEqual<T1 extends any, T2 extends any>(a: T1, b: T2) {
 export function shallowEqualArray<
   Arr extends ArrayLike<any>,
   Arr2 extends ArrayLike<any>
->(a: Arr, b: Arr2) {
+>(a: Arr, b: Arr2, checkFrom = 0) {
   if (!a && !b) return true
   if (!a !== !b) return false
   if (a.length !== b.length) return false
-  for (let i = 0; i < a.length; i++) {
+  for (let i = checkFrom; i < a.length; i++) {
     if (a[i] !== b[i]) return false
   }
   return true
@@ -49,7 +49,7 @@ export function deepEqual<
   if (aKeys.length !== bKeys.length) return false
 
   for (let key of aKeys) {
-    if (typeof a[key] === 'object' && typeof b[key] === 'object') {
+    if (typeof a[key] === "object" && typeof b[key] === "object") {
       if (!deepEqual(a[key], b[key])) {
         return false
       }

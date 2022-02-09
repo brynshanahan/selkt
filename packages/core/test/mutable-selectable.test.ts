@@ -26,6 +26,7 @@ describe("equalityChecks", () => {
     expect(shallowEqualArray([a], [a])).toBe(true)
     expect(shallowEqualArray([{}], [{}])).toBe(false)
     expect(shallowEqualArray([true, false], [false, true])).toBe(false)
+    expect(shallowEqualArray([true, true], [false, true], 1)).toBe(true)
   })
 
   test("shallowEqual checks correctly", () => {
@@ -386,7 +387,7 @@ describe("Selectable", () => {
 
   it("runs updates when returning undefined", () => {
     let callback = jest.fn()
-    let state = { value: {} }
+    let state: any = { value: {} }
 
     let store = new Selectable(state)
 
