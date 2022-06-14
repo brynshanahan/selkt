@@ -7,13 +7,33 @@ import type {
 } from "./types"
 
 export class MutableSelectable<T> implements SelectableInterface<T> {
-  private listeners = new Set<Callback<T>>()
+  private meta = {
+    stores: {
+      computations: new Set<Callback<T>>(),
+      subscriptions: new Set<Callback<T>>(),
+    },
+    storeNames: ["computations", "subscriptions"],
+    currentStore: "subscriptions",
+    withStore: <T>(name: string, callback: () => T) => {
+      if (!this.meta.stores[name]) {
+        throw new Error("Store " + name + " does not exist")
+      }
+
+      let prev = this.meta.currentStore
+      this.meta.currentStore = name
+      let result = callback()
+      this.meta.currentStore = prev
+      return result
+    },
+  }
+
   state: T
   version: number = 0
   flushing: false | (() => any) = false
   constructor(initialState: T) {
     this.state = initialState
   }
+
   flush(callback?: () => any) {
     if (callback) {
       if (!this.flushing) {
@@ -24,16 +44,19 @@ export class MutableSelectable<T> implements SelectableInterface<T> {
 
     if (!this.flushing || this.flushing === callback) {
       this.flushing = false
-      for (let listener of this.listeners) {
-        listener(this.state)
+      for (let groupName of this.meta.storeNames) {
+        for (let listener of this.meta.stores[groupName]) {
+          listener(this.state)
+        }
       }
     }
   }
   subscribe(callback: Callback<T>) {
-    this.listeners.add(callback)
+    let store = this.meta.stores[this.meta.currentStore]
+    store.add(callback)
     return Object.assign(
       () => {
-        this.listeners.delete(callback)
+        store.delete(callback)
       },
       { update: () => callback(this.state) }
     )
@@ -48,6 +71,34 @@ export class MutableSelectable<T> implements SelectableInterface<T> {
     this.version++
     this.flush()
   }
+
+  compute<Slice, Result>(
+    selector: Callback<T, Slice>,
+    mapper: Callback<Slice, Result>
+  ) {
+    let selected: ReturnType<typeof selector>
+    let value: ReturnType<typeof mapper>
+    let created = false
+
+    let stop = this.meta.withStore("computations", () =>
+      this.select(selector, (slice) => {
+        selected = slice
+        created = false
+      })
+    )
+
+    return Object.assign(
+      () => {
+        if (!created) {
+          value = mapper(selected)
+          created = true
+        }
+        return value
+      },
+      { stop }
+    )
+  }
+
   select<V>(
     selector: Callback<T, V>,
     onChange: Callback2Opt<V>,
@@ -76,10 +127,9 @@ export class MutableSelectable<T> implements SelectableInterface<T> {
       }
     })
   }
-  getSnapshot() {
-    return this.version
-  }
   destroy() {
-    this.listeners.clear()
+    for (let groupName of this.meta.storeNames) {
+      this.meta.stores[groupName].clear()
+    }
   }
 }
