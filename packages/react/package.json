@@ -15,16 +15,17 @@
     "publish": "npm publish --scope=public"
   },
   "peerDependencies": {
-    "@selkt/core": "^1.0.9",
-    "react": "^17.0.1"
+    "@selkt/core": "^1.0.42",
+    "react": ">=18"
   },
   "umdGlobals": {
     "react": "React"
   },
   "devDependencies": {
+    "@selkt/core": "^1.0.42",
     "@testing-library/react": "^12.1.2",
     "@testing-library/react-hooks": "^7.0.2",
-    "@types/react": "^17.0.1",
-    "react-dom": "^17.0.2"
+    "@types/react": ">=18",
+    "react-dom": ">=18"
   }
 }
