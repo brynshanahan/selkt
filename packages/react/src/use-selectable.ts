@@ -1,5 +1,6 @@
-import { useSyncExternalStore, useLayoutEffect, useRef, useState } from "react"
+import { useSyncExternalStoreWithSelector } from "use-sync-external-store/with-selector"
 import { strictEqual, SelectableInterface } from "@selkt/core"
+import { useCallback } from "react"
 
 const ret: <T>(arg: T) => T = (v) => v
 export function useSelectable<TState, TSlice = TState>(
@@ -19,16 +20,28 @@ export function useSelectable<TState, TSlice = TState>(
 ): TSlice | undefined {
   let sel = selector ?? (ret as (arg: TState) => TSlice)
 
-  return useSyncExternalStore(
-    (onChange) => {
+  const getSnapshot = useCallback(
+    () => (store ? store.version : undefined),
+    [store]
+  )
+
+  const subscribe = useCallback(
+    (next: any) => {
       if (store) {
-        return store.select(sel, () => onChange(), equalityCheck)
+        return store.subscribe(next)
       } else {
-        onChange()
         return () => {}
       }
     },
+    [store]
+  )
+
+  return useSyncExternalStoreWithSelector(
+    subscribe,
+    // @ts-ignore
+    getSnapshot,
+    getSnapshot,
     () => (store ? sel(store.state) : undefined),
-    () => (store ? sel(store.state) : undefined)
+    equalityCheck
   )
 }

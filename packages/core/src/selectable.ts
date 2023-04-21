@@ -1,4 +1,4 @@
-import produce from "immer"
+import { produce } from "immer"
 import { MutableSelectable } from "./mutable-selectable"
 import { Callback } from "./types"
 

@@ -10,4 +10,6 @@ export type SelectableInterface<T> = {
     equalityCheck?: Callback2<V, boolean>
   ) => CancelSub
   state: T
+  version: number
+  subscribe: (callback: Callback<T>) => CancelSub & { update: () => void }
 }

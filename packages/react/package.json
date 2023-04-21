@@ -22,10 +22,11 @@
     "react": "React"
   },
   "devDependencies": {
-    "@selkt/core": "^1.0.42",
-    "@testing-library/react": "^12.1.2",
-    "@testing-library/react-hooks": "^7.0.2",
+    "@selkt/core": "workspace:*",
+    "@testing-library/react": "^14.0.0",
+    "@testing-library/react-hooks": "^8.0.1",
     "@types/react": ">=18",
+    "react": ">=18",
     "react-dom": ">=18"
   }
 }

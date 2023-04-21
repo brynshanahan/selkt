@@ -1,4 +1,4 @@
-import { shallowEqualArray, strictEqual } from "./equality-checks"
+import { strictEqual } from "./equality-checks"
 import type {
   Callback,
   Callback2,
@@ -14,17 +14,6 @@ export class MutableSelectable<T> implements SelectableInterface<T> {
     },
     storeNames: ["computations", "subscriptions"],
     currentStore: "subscriptions",
-    withStore: <T>(name: string, callback: () => T) => {
-      if (!this.meta.stores[name]) {
-        throw new Error("Store " + name + " does not exist")
-      }
-
-      let prev = this.meta.currentStore
-      this.meta.currentStore = name
-      let result = callback()
-      this.meta.currentStore = prev
-      return result
-    },
   }
 
   state: T
@@ -70,33 +59,6 @@ export class MutableSelectable<T> implements SelectableInterface<T> {
 
     this.version++
     this.flush()
-  }
-
-  compute<Slice, Result>(
-    selector: Callback<T, Slice>,
-    mapper: Callback<Slice, Result>
-  ) {
-    let selected: ReturnType<typeof selector>
-    let value: ReturnType<typeof mapper>
-    let created = false
-
-    let stop = this.meta.withStore("computations", () =>
-      this.select(selector, (slice) => {
-        selected = slice
-        created = false
-      })
-    )
-
-    return Object.assign(
-      () => {
-        if (!created) {
-          value = mapper(selected)
-          created = true
-        }
-        return value
-      },
-      { stop }
-    )
   }
 
   select<V>(

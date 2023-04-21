@@ -1,5 +1,5 @@
 export function strictEqual<T1 extends any, T2 extends any>(a: T1, b: T2) {
-  return a === b
+  return Object.is(a, b)
 }
 
 export function shallowEqualArray<
