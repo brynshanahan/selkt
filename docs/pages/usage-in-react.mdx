@@ -6,16 +6,6 @@
 npm install @selkt/react
 ```
 
-#### API
-
-```ts
-useSelectable<StateType, SliceType>(
-  selectable: SelectableInterface<StateType>,
-  selector: (state: StateType) => SliceType,
-  equalityFn?: (state: SliceType, prevState: SliceType) => boolean
-): SliceType
-```
-
 #### Usage
 
 @selkt/react contains one hook, `useSelectable` which takes any `SelectableInterface`, a selector and an optional equality function and returns the selected slice of the state.
@@ -47,4 +37,14 @@ const App = () => {
       <button type="button" onClick={}>Increment</button>
     </div>
 }
+```
+
+#### API
+
+```ts
+useSelectable<StateType, SliceType>(
+  selectable: SelectableInterface<StateType>,
+  selector: (state: StateType) => SliceType,
+  equalityFn?: (state: SliceType, prevState: SliceType) => boolean
+): SliceType
 ```
