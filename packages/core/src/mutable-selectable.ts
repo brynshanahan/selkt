@@ -8,12 +8,7 @@ import type {
 
 export class MutableSelectable<T> implements SelectableInterface<T> {
   private meta = {
-    stores: {
-      computations: new Set<Callback<T>>(),
-      subscriptions: new Set<Callback<T>>(),
-    },
-    storeNames: ["computations", "subscriptions"],
-    currentStore: "subscriptions",
+    subscriptions: new Set<Callback<T>>(),
   }
 
   state: T
@@ -33,15 +28,13 @@ export class MutableSelectable<T> implements SelectableInterface<T> {
 
     if (!this.flushing || this.flushing === callback) {
       this.flushing = false
-      for (let groupName of this.meta.storeNames) {
-        for (let listener of this.meta.stores[groupName]) {
-          listener(this.state)
-        }
+      for (let listener of this.meta.subscriptions) {
+        listener(this.state)
       }
     }
   }
   subscribe(callback: Callback<T>) {
-    let store = this.meta.stores[this.meta.currentStore]
+    let store = this.meta.subscriptions
     store.add(callback)
     return Object.assign(
       () => {
@@ -90,8 +83,6 @@ export class MutableSelectable<T> implements SelectableInterface<T> {
     })
   }
   destroy() {
-    for (let groupName of this.meta.storeNames) {
-      this.meta.stores[groupName].clear()
-    }
+    this.meta.subscriptions.clear()
   }
 }

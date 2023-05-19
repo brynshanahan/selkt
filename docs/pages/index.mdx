@@ -1,0 +1,40 @@
+# Introduction
+
+@selkt is a tiny store library built using classes and typescript.
+
+It has a similar api to Zustand except that the .set command is always exposed by default.
+
+## Getting Started
+
+```bash
+npm install @selkt/core immer
+```
+
+If you are using React you can also install the React hook:
+
+```bash
+npm install @selkt/react
+```
+
+### High level
+
+#### @selkt/core
+
+The core package used to create stores.
+
+The core package contains one type export:
+
+- [`SelectableInterface`](./selectable-interface) - The base type that all Selectable classes `implement`
+
+And two class exports:
+
+- [`MutableSelectable`](./mutable-selectable) - The base Selectable class. Updates state with vanilla mutations (bring your own immutable library)
+- [`Selectable`](./selectable) - extends MutableSelectable but uses immer to ensure state mutations are immutable
+
+As well as [four utility functions](./utilities): `shallowEqual`, `shallowEqualArray`, `deepEqual` and `strictEqual`
+
+#### @selkt/react
+
+The React package contains one hook:
+
+- [`useSelectable`](./usage-in-react) - A hook that returns a Selectable instance and subscribes to it's state changes

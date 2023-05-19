@@ -1,6 +1,6 @@
 {
   "name": "selkt",
-  "version": "1.0.39",
+  "version": "1.0.44",
   "description": "",
   "main": "index.js",
   "scripts": {
@@ -15,7 +15,8 @@
   "author": "",
   "license": "ISC",
   "workspaces": [
-    "packages/*"
+    "packages/*",
+    "docs"
   ],
   "devDependencies": {
     "@babel/plugin-proposal-class-properties": "^7.12.13",

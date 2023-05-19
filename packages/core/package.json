@@ -2,7 +2,7 @@
   "name": "@selkt/core",
   "description": "Global stores",
   "authors": "brynshanahan",
-  "version": "1.0.42",
+  "version": "1.0.44",
   "main": "dist/main/index.js",
   "module": "dist/module/index.es.js",
   "umd": "dist/umd/selkt-core.js",

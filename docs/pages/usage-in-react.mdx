@@ -1,0 +1,50 @@
+# Usage in React
+
+#### Installation
+
+```bash
+npm install @selkt/react
+```
+
+#### API
+
+```ts
+useSelectable<StateType, SliceType>(
+  selectable: SelectableInterface<StateType>,
+  selector: (selectable: StateType) => SliceType,
+  equalityFn?: (a: SliceType, b: SliceType) => boolean
+): SliceType
+```
+
+#### Usage
+
+@selkt/react contains one hook, `useSelectable` which takes any `SelectableInterface`, a selector and an optional equality function and returns the selected slice of the state.
+
+```jsx
+import { MutableSelectable } from '@selkt/core'
+import { useSelectable } from '@selkt/react'
+
+const store = new MutableSelectable({
+  counter: 0,
+})
+
+const App = () => {
+  const counter = useSelectable(
+    store,
+    state => state.counter,
+    // strictEqual
+  )
+
+  const increment = () => {
+    store.set(state => {
+      state.counter++
+    })
+  }
+
+  return (
+    <div>
+      {counter}
+      <button type="button" onClick={}>Increment</button>
+    </div>
+}
+```

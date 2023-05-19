@@ -1,0 +1,367 @@
+import { Callout } from "nextra-theme-docs"
+import { Sandpack } from "@codesandbox/sandpack-react"
+import { mutableSelectableExample1 } from "../components/examples.tsx"
+
+# MutableSelectable
+
+MutableSelectable implements the [SelectableInterface](./selectable-interface) and provides some additional helper functions like [`.flush`](#flush)
+
+Jump to [usage](#usage) for usage info.
+
+## API
+
+#### `export class MutableSelectable<StateType>`
+
+###### `MutableSelectable<StateType>.subscribe`
+
+Subscribes to a store. Returns an unsubscribe function. The returned function also has an `.update` method that can be used to force the listener to rerun
+
+```typescript
+subscribe(
+  listener: (state: StateType) => void,
+): (Unsubscribe & { update: () => void })
+```
+
+###### `MutableSelectable<StateType>.select`
+
+Subscibes to changes on a slice of state. The listener runs immediately and then whenever the `SelectedSlice` changes.
+The listener also recieves the previous value of `SelectedSlice` as the second argument so you can compare the current and previous values in your listener
+
+```typescript
+select<SelectedSlice>(
+  selector: (state: StateType) => SelectedSlice,
+  listener: (state: SelectedSlice, prevState?: SelectedSlice | undefined) => void,
+  equalityFn?: (a: SelectedSlice, b: SelectedSlice) => boolean
+): (Unsubscribe & { update: () => void })
+```
+
+###### `MutableSelectable<StateType>.set`
+
+This is the only way to change the state of a store.
+It accepts a single callback which is called with the current state. The callback can return a new state or mutate the current state.
+
+```typescript
+set(
+  updater: (currentState: StateType) => void | StateType
+) => void
+```
+
+###### `MutableSelectable<StateType>.state`
+
+The current state of the store.
+
+```typescript
+state: StateType
+```
+
+##### `MutableSelectable<StateType>.version`
+
+The current version of the store. This is incremented every time the state is changed.
+
+```typescript
+version: number
+```
+
+##### `MutableSelectable<StateType>.flush`
+
+Delays calling listeners until the callback has finished executing. This is useful when you want to make multiple changes to state and only want to the listeners to update once.
+
+```tsx
+flush(
+  callback: () => void
+): void
+```
+
+## Usage
+
+#### Creating a store
+
+Creating a store is as simple as creating a new instance of MutableSelectable
+
+```tsx
+const store = new MutableSelectable({
+  username: "",
+  password: "",
+})
+```
+
+#### Updating state
+
+The only way to update state is by calling `.set` on the store
+
+```tsx
+store.set((state) => {
+  state.username = "John"
+  state.password = "password123"
+})
+```
+
+#### Subscribing to changes
+
+You can subscribe to changes on the store with `.subscribe`.
+This will run the listener immediately and then every time `.set` is called.
+
+```tsx
+const unsubscribe = store.subscribe(() => {
+  console.log(store.state.username)
+})
+```
+
+#### Subscribing to a slice of state
+
+If you only want your listener to run when a subset of state changes you can use the `.select` method to "select" which part of state you are interested in.
+
+For example the listener in the snippet below would run once immediately and then whenever the "username" value changes
+
+```tsx
+const listener = (username) => console.log(username)
+
+const unsub = store.select((state) => state.username, listener)
+
+// we selected the username above so this will trigger the listener
+store.set((state) => {
+  state.username = "example_password"
+})
+
+// the listener is not called because we haven't selected the password
+store.set((state) => {
+  state.password = "example_password"
+})
+```
+
+Importantly the listener also receieves
+
+#### Computing values from state
+
+You can compute a value from any part of the store in the selector function. The listener will then only rerun when the computed value changes
+
+```tsx
+const selectHasMatchingPassword = (state) => state.username === state.password
+
+const matchingPasswordListener = (isMatching) => {
+  if (isMatching) {
+    console.log("Your password can't be the same as your username!")
+  }
+}
+
+const unsubscribe = store.select(
+  selectHasMatchingPassword,
+  matchingPasswordListener
+)
+```
+
+#### Custom equality functions
+
+By default the equality function used is `Object.is`.
+This means that if you return a new object or array in the selector the listener will run on every change.
+
+To avoid your listener running on every change you can supply your own equality function as the third argument to `.select`
+
+```tsx
+const unsubscribe = store.select(
+  (state) => [state.username, state.password],
+  ([username, password]) => {
+    console.log("Username or password changed")
+  },
+  // returns true if an array has equal length and every item is strictly equal
+  shallowEqualArray
+)
+```
+
+#### Subscribing to multiple parts of a store
+
+As alluded to above you can return an object or array in the selector function to subscribe to multiple parts of state.
+
+```tsx
+import { shallowEqual, shallowEqualArray, deepEqual, strictEqual } from "@selkt/core"
+
+// updates when either username or password changes
+store.select(
+  (state) => [state.username, state.password]
+  ([username, password]) => {
+    console.log('Username or password changed')
+  },
+  shallowEqualArray
+)
+
+// updates when either username or password changes
+store.select(
+  state => ({ username: state.username, password: state.password }),
+  ({ username, password }) => {
+    console.log('Username or password changed')
+  },
+  shallowEqual
+)
+
+// updates when any value in state changes
+store.select(
+  state => state,
+  state => {
+    console.log('Username or password changed')
+  },
+  deepEqual
+)
+```
+
+#### Forcing a listener to re-run
+
+If you need to force a listener to re-run you can call the `.update` method on the returned unsubscribe function
+
+<Callout>
+  Calling `.update` is a last resort and if you find a situation where you need
+  to call it you should probably try and refactor your code to avoid it.
+</Callout>
+
+```tsx
+const listener = store.select(
+  (state) => state.username,
+  (username) => {
+    // runs once on mount and again when listener.update() is called
+    console.log(username)
+  }
+)
+
+listener.update()
+```
+
+#### Delay updating listeners while making multiple changes to state
+
+If you need to make multiple changes to state and only want the listeners to run once you can use the `.flush` method.
+
+```tsx
+const store = new MutableSelectable({
+  username: "",
+  password: "",
+})
+
+store.select(
+  (state) => state.username,
+  (username) => {
+    console.log(username)
+  }
+)
+
+// logs "" on mount
+
+store.flush(() => {
+  store.set((state) => {
+    state.username = "John"
+  })
+  store.set((state) => {
+    state.username = "Johnny"
+  })
+})
+
+// logs "Johnny" after the .flush callback has finished executing
+```
+
+Because both calls to `.set` happen inside the callback above it would only trigger a single listener update
+
+#### Unsubscribing from a store
+
+To unsubscribe from a store simply call the returned unsubscribe function.
+
+In the example below the listeners would be called once on mount but will not be called again when `.set` is called
+
+```tsx
+const listener1 = store.subscribe(() => {
+  console.log(store.state.username)
+})
+
+listener1()
+
+// or
+
+const listener2 = store.select(
+  (state) => state.username,
+  (username) => {
+    console.log(username)
+  }
+)
+
+listener2()
+
+store.set((state) => {
+  state.username = "John"
+  state.password = "password123"
+})
+```
+
+#### A note on mutability
+
+MutableSelectable is unconcerned with the mutability of objects. So if you select an object from state and mutate one if it's properties the listener selecting that object will not run as the object identity has not changed.
+To get around this you can either avoid mutating in your `.set` calls:
+
+```tsx
+const store = new MutableSelectable({
+  user: {
+    username: "",
+    password: "",
+  },
+})
+
+store.select(
+  (state) => state.user,
+  (user) => {
+    console.log(user)
+  }
+)
+
+// This would not trigger the listener as the object identity has not changed
+store.set((state) => {
+  state.user.username = "John"
+})
+
+// This would trigger the listener as the object identity has changed
+store.set((state) => {
+  state.user = {
+    ...state.user,
+    username: "John",
+  }
+})
+```
+
+You could also use a third party library like [immer](https://immerjs.github.io/immer/) to make your `.set` calls immutable by default.
+This is essentially the same as using the [`Selectable`](./selectable) class, except Selectable has a few performance optimisations that make it faster if the `.set` call produces no change.
+
+```tsx
+import produce from "immer"
+
+store.set(
+  produce((state) => {
+    state.user = produce(state.user, (draft) => {
+      draft.username = "John"
+    })
+  })
+)
+```
+
+another option is to provide a custom equality function to your selector
+
+```tsx
+const store = new MutableSelectable({
+  user: {
+    username: "",
+    password: "",
+  },
+})
+
+store.select(
+  (store) => store.user,
+  (user) => {
+    console.log(user)
+  },
+  shallowEqual
+)
+
+// This would trigger the listener as the shallowEqual function would return false
+store.set((state) => {
+  state.user.username = "John"
+})
+```
+
+## Playground
+
+{
+mutableSelectableExample1
+}

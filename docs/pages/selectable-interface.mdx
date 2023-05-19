@@ -1,0 +1,57 @@
+# The `SelectableInterface`
+
+All Selectable classes implement `SelectableInterface`.
+
+## API
+
+#### `export type SelectableInterface<StateType>`
+
+###### `SelectableInterface<StateType>.subscribe`
+
+Subscribes to a store. Returns an unsubscribe function. The returned function also has an `.update` method that can be used to force the listener to rerun
+
+```typescript
+subscribe(
+  listener: (state: StateType) => void,
+): (Unsubscribe & { update: () => void })
+```
+
+###### `SelectableInterface<StateType>.select`
+
+Subscibes to changes on a slice of state. The listener runs immediately and then whenever the `SelectedSlice` changes.
+The listener also recieves the previous value of `SelectedSlice` as the second argument so you can compare the current and previous values in your listener
+
+```typescript
+select<SelectedSlice>(
+  selector: (state: StateType) => SelectedSlice,
+  listener: (state: SelectedSlice) => void,
+  equalityFn?: (a: SelectedSlice, b: SelectedSlice) => boolean
+): (Unsubscribe & { update: () => void })
+```
+
+###### `SelectableInterface<StateType>.set`
+
+This is the only way to change the state of a store.
+It accepts a single callback which is called with the current state. The callback can return a new state or mutate the current state.
+
+```typescript
+set(
+  updater: (currentState: StateType) => void | Type
+) => void
+```
+
+###### `SelectableInterface<StateType>.state`
+
+The current state of the store.
+
+```typescript
+state: StateType
+```
+
+##### `SelectableInterface<StateType>.version`
+
+The current version of the store. This is incremented every time the state is changed.
+
+```typescript
+version: number
+```
