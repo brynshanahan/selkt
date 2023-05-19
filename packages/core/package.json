@@ -2,12 +2,13 @@
   "name": "@selkt/core",
   "description": "Global stores",
   "authors": "brynshanahan",
-  "version": "1.0.44",
+  "version": "1.0.45",
   "main": "dist/main/index.js",
   "module": "dist/module/index.es.js",
   "umd": "dist/umd/selkt-core.js",
   "umdMin": "dist/umd/selkt-core.min.js",
   "sideEffects": false,
+  "homepage": "https://selkt.vercel.app",
   "files": [
     "dist/"
   ],
