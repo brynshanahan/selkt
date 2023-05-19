@@ -18,6 +18,7 @@
     "packages/*",
     "docs"
   ],
+  "private": true,
   "devDependencies": {
     "@babel/plugin-proposal-class-properties": "^7.12.13",
     "@babel/plugin-transform-runtime": "^7.12.15",
