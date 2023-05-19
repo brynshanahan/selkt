@@ -11,8 +11,8 @@ npm install @selkt/react
 ```ts
 useSelectable<StateType, SliceType>(
   selectable: SelectableInterface<StateType>,
-  selector: (selectable: StateType) => SliceType,
-  equalityFn?: (a: SliceType, b: SliceType) => boolean
+  selector: (state: StateType) => SliceType,
+  equalityFn?: (state: SliceType, prevState: SliceType) => boolean
 ): SliceType
 ```
 

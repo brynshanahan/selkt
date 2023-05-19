@@ -8,97 +8,6 @@ Selectable extends [MutableSelectable](./mutable-selectable) and implements the 
 
 Jump to [usage](#usage) for usage info.
 
-## API
-
-#### `export class Selectable<StateType>`
-
-###### `Selectable<StateType>.subscribe`
-
-Subscribes to a store. Returns an unsubscribe function. The returned function also has an `.update` method that can be used to force the listener to rerun
-
-```typescript
-subscribe(
-  listener: (state: StateType) => void,
-): (Unsubscribe & { update: () => void })
-```
-
-###### `Selectable<StateType>.select`
-
-Subscibes to changes on a slice of state. The listener runs immediately and then whenever the `SelectedSlice` changes.
-The listener also recieves the previous value of `SelectedSlice` as the second argument so you can compare the current and previous values in your listener
-
-```typescript
-select<SelectedSlice>(
-  selector: (state: StateType) => SelectedSlice,
-  listener: (state: SelectedSlice, prevState?: SelectedSlice | undefined) => void,
-  equalityFn?: (a: SelectedSlice, b: SelectedSlice) => boolean
-): (Unsubscribe & { update: () => void })
-```
-
-###### `Selectable<StateType>.set`
-
-This is the only way to change the state of a store.
-It accepts a single callback which is called with the current state.
-The callback can return a new state or mutate the current state.
-
-Any mutations inside the recipe function will be made immutable by `immer` and the store will be updated with the new state.
-
-```typescript
-set(
-  recipeFunction: (currentState: ImmerDraft<StateType>) => void | StateType
-) => void
-```
-
-If you mutate a property and it has no effective change then the store will not be updated and listeners will not be called.
-
-```typescript
-const store = new Selectable({
-  username: "John",
-  password: "",
-})
-
-let initialState = store.state
-
-// no update as immer is able to tell that nothing has changed
-store.set((state) => {
-  state.username = "John"
-})
-
-// store.state === initialState
-
-store.set((state) => {
-  state.username = "Johnny"
-})
-
-// store.state !== initialState
-```
-
-###### `Selectable<StateType>.state`
-
-The current state of the store.
-
-```typescript
-state: StateType
-```
-
-##### `Selectable<StateType>.version`
-
-The current version of the store. This is incremented every time the state is changed.
-
-```typescript
-version: number
-```
-
-##### `Selectable<StateType>.flush`
-
-Delays calling listeners until the callback has finished executing. This is useful when you want to make multiple changes to state and only want to the listeners to update once.
-
-```tsx
-flush(
-  callback: () => void
-): void
-```
-
 ## Usage
 
 #### Creating a store
@@ -342,3 +251,94 @@ store.set((state) => {
 {
 mutableSelectableExample1
 }
+
+## API
+
+#### `export class Selectable<StateType>`
+
+###### `Selectable<StateType>.subscribe`
+
+Subscribes to a store. Returns an unsubscribe function. The returned function also has an `.update` method that can be used to force the listener to rerun
+
+```typescript
+subscribe(
+  listener: (state: StateType) => void,
+): (Unsubscribe & { update: () => void })
+```
+
+###### `Selectable<StateType>.select`
+
+Subscibes to changes on a slice of state. The listener runs immediately and then whenever the `SelectedSlice` changes.
+The listener also recieves the previous value of `SelectedSlice` as the second argument so you can compare the current and previous values in your listener
+
+```typescript
+select<SelectedSlice>(
+  selector: (state: StateType) => SelectedSlice,
+  listener: (state: SelectedSlice, prevState?: SelectedSlice | undefined) => void,
+  equalityFn?: (a: SelectedSlice, b: SelectedSlice) => boolean
+): (Unsubscribe & { update: () => void })
+```
+
+###### `Selectable<StateType>.set`
+
+This is the only way to change the state of a store.
+It accepts a single callback which is called with the current state.
+The callback can return a new state or mutate the current state.
+
+Any mutations inside the recipe function will be made immutable by `immer` and the store will be updated with the new state.
+
+```typescript
+set(
+  recipeFunction: (currentState: ImmerDraft<StateType>) => void | StateType
+) => void
+```
+
+If you mutate a property and it has no effective change then the store will not be updated and listeners will not be called.
+
+```typescript
+const store = new Selectable({
+  username: "John",
+  password: "",
+})
+
+let initialState = store.state
+
+// no update as immer is able to tell that nothing has changed
+store.set((state) => {
+  state.username = "John"
+})
+
+// store.state === initialState
+
+store.set((state) => {
+  state.username = "Johnny"
+})
+
+// store.state !== initialState
+```
+
+###### `Selectable<StateType>.state`
+
+The current state of the store.
+
+```typescript
+state: StateType
+```
+
+##### `Selectable<StateType>.version`
+
+The current version of the store. This is incremented every time the state is changed.
+
+```typescript
+version: number
+```
+
+##### `Selectable<StateType>.flush`
+
+Delays calling listeners until the callback has finished executing. This is useful when you want to make multiple changes to state and only want to the listeners to update once.
+
+```tsx
+flush(
+  callback: () => void
+): void
+```

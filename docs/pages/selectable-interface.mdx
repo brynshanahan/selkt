@@ -24,7 +24,7 @@ The listener also recieves the previous value of `SelectedSlice` as the second a
 ```typescript
 select<SelectedSlice>(
   selector: (state: StateType) => SelectedSlice,
-  listener: (state: SelectedSlice) => void,
+  listener: (state: SelectedSlice, previousState?: SelectedSlice | undefined) => void,
   equalityFn?: (a: SelectedSlice, b: SelectedSlice) => boolean
 ): (Unsubscribe & { update: () => void })
 ```
@@ -32,11 +32,12 @@ select<SelectedSlice>(
 ###### `SelectableInterface<StateType>.set`
 
 This is the only way to change the state of a store.
-It accepts a single callback which is called with the current state. The callback can return a new state or mutate the current state.
+It accepts a single callback which is called with the current state.
+The callback can return a new state or mutate the current state.
 
 ```typescript
 set(
-  updater: (currentState: StateType) => void | Type
+  updater: (currentState: StateType) => void | StateType
 ) => void
 ```
 
