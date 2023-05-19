@@ -44,5 +44,6 @@
     "@types/use-sync-external-store": "^0.0.3",
     "typescript": "^5.0.4",
     "use-sync-external-store": "^1.2.0"
-  }
+  },
+  "packageManager": "yarn@3.5.1"
 }
