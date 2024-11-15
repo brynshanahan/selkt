@@ -1,3 +1,3 @@
-import modules from './rollup.config.common'
+import modules from "./rollup.config.common.js"
 
-export default modules('development')
+export default modules("development")

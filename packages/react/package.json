@@ -2,7 +2,7 @@
   "name": "@selkt/react",
   "description": "Hooks for selectable global stores",
   "authors": "brynshanahan",
-  "version": "1.0.47",
+  "version": "2.0.0",
   "main": "dist/main/index.js",
   "module": "dist/module/index.es.js",
   "umd": "dist/umd/selkt-react.js",
@@ -16,18 +16,21 @@
     "publish": "npm publish --scope=public"
   },
   "peerDependencies": {
-    "@selkt/core": "^1.0.42",
-    "react": ">=18"
+    "@selkt/core": "^1.0.47",
+    "react": ">=18",
+    "use-sync-external-store": "^1.2.2"
   },
   "umdGlobals": {
     "react": "React"
   },
   "devDependencies": {
     "@selkt/core": "workspace:*",
-    "@testing-library/react": "^14.0.0",
+    "@testing-library/react": "^16.0.1",
     "@testing-library/react-hooks": "^8.0.1",
     "@types/react": ">=18",
+    "@types/use-sync-external-store": "^0.0.6",
     "react": ">=18",
-    "react-dom": ">=18"
+    "react-dom": ">=18",
+    "use-sync-external-store": "^1.2.2"
   }
 }
