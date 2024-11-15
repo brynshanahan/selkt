@@ -1,4 +1,4 @@
-import { useSyncExternalStoreWithSelector } from "use-sync-external-store/with-selector"
+import { useSyncExternalStoreWithSelector } from "use-sync-external-store/shim/with-selector"
 import { strictEqual, SelectableInterface } from "@selkt/core"
 import { useCallback } from "react"
 

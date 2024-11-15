@@ -330,7 +330,8 @@ select<SelectedSlice>(
 ###### `MutableSelectable<StateType>.set`
 
 This is the only way to change the state of a store.
-It accepts a single callback which is called with the current state. The callback can return a new state or mutate the current state.
+It accepts a single callback which is called with the current state.
+The callback can return a new state or mutate the current state.
 
 ```typescript
 set(
@@ -348,7 +349,8 @@ state: StateType
 
 ##### `MutableSelectable<StateType>.version`
 
-The current version of the store. This is incremented every time the state is changed.
+The current version of the store.
+This is incremented every time the state is changed.
 
 ```typescript
 version: number
@@ -356,7 +358,8 @@ version: number
 
 ##### `MutableSelectable<StateType>.flush`
 
-Delays calling listeners until the callback has finished executing. This is useful when you want to make multiple changes to state and only want to the listeners to update once.
+Delays calling listeners until the callback has finished executing.
+This is useful when you want to make multiple changes to state and only want to the listeners to update once.
 
 ```tsx
 flush(

@@ -8,7 +8,9 @@ All Selectable classes implement `SelectableInterface`.
 
 ###### `SelectableInterface<StateType>.subscribe`
 
-Subscribes to a store. Returns an unsubscribe function. The returned function also has an `.update` method that can be used to force the listener to rerun
+Subscribes to a store.
+Returns an unsubscribe function.
+The returned function also has an `.update` method that can be used to force the listener to rerun.
 
 ```typescript
 subscribe(
@@ -18,7 +20,8 @@ subscribe(
 
 ###### `SelectableInterface<StateType>.select`
 
-Subscibes to changes on a slice of state. The listener runs immediately and then whenever the `SelectedSlice` changes.
+Subscibes to changes on a slice of state.
+The listener runs immediately and then whenever the `SelectedSlice` changes.
 The listener also recieves the previous value of `SelectedSlice` as the second argument so you can compare the current and previous values in your listener
 
 ```typescript

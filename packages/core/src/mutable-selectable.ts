@@ -1,3 +1,4 @@
+import { nothing } from "immer"
 import { strictEqual } from "./equality-checks"
 import type {
   Callback,
@@ -43,11 +44,19 @@ export class MutableSelectable<T> implements SelectableInterface<T> {
       { update: () => callback(this.state) }
     )
   }
-  set(updater: Callback<T, T | undefined | void>) {
+  set(
+    updater: Callback<
+      T,
+      T extends undefined
+        ? T | undefined | void | typeof nothing
+        : T | undefined | void
+    >
+  ) {
     let result = updater(this.state)
 
     if (typeof result !== "undefined") {
-      this.state = result
+      // @ts-ignore
+      this.state = result === nothing ? undefined : result
     }
 
     this.version++
@@ -60,7 +69,7 @@ export class MutableSelectable<T> implements SelectableInterface<T> {
     equalityCheck: Callback2<V, boolean> = strictEqual
   ) {
     /* 
-    We pass in the previos state if the onChange callback has at least 2 arguments or no arguments.
+    We pass in the previous state if the onChange callback has at least 2 arguments or no arguments.
     This is because functions that use the ...args operator will report as having 0 arguments
     eg.
       (function(...args) {}).length === 0

@@ -4,9 +4,7 @@ import { mutableSelectableExample1 } from "../components/examples.tsx"
 
 # Selectable
 
-Selectable extends [MutableSelectable](./mutable-selectable) and implements the [SelectableInterface](./selectable-interface). The only difference between this and [MutableSelectable](./mutable-selectable) is that this uses [`immer`](https://github.com/immerjs/immer) to ensure that mutations in `.set` calls are immutable
-
-Jump to [usage](#usage) for usage info.
+Selectable extends [MutableSelectable](./mutable-selectable) and implements the [SelectableInterface](./selectable-interface). The only difference between this and MutableSelectable is that this uses [`immer`](https://github.com/immerjs/immer) to ensure that mutations in `.set` calls are immutable
 
 ## Usage
 
@@ -65,7 +63,7 @@ store.set((state) => {
 })
 ```
 
-Importantly the listener also receieves
+Importantly the listener also receieves the previous value as it's second argument, so you can decide if you are interested in a change by comparing the current and previous selection
 
 #### Computing values from state
 

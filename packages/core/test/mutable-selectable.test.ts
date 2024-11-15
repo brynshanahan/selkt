@@ -1,3 +1,4 @@
+import { nothing } from "immer"
 import {
   deepEqual,
   MutableSelectable,
@@ -21,6 +22,10 @@ describe("equalityChecks", () => {
 
   test("shallowEqualArray checks correctly", () => {
     const a = {}
+    // @ts-ignore hmm not ideal
+    expect(shallowEqualArray(false, "")).toBe(true)
+    // @ts-ignore
+    expect(shallowEqualArray([1, 2, 3], false)).toBe(false)
     expect(shallowEqualArray([1, 2, 3], [1, 2, 3])).toBe(true)
     expect(shallowEqualArray([], [1, 2, 3])).toBe(false)
     expect(shallowEqualArray([a], [a])).toBe(true)
@@ -31,7 +36,10 @@ describe("equalityChecks", () => {
 
   test("shallowEqual checks correctly", () => {
     expect(shallowEqual({}, {})).toBe(true)
+    // @ts-ignore
+    expect(shallowEqual("", undefined)).toBe(false)
     expect(shallowEqual({}, undefined)).toBe(false)
+    expect(shallowEqual(undefined, {})).toBe(false)
     expect(shallowEqual({ a: true }, { a: true })).toBe(true)
     expect(shallowEqual({ a: false, test: false }, { a: true })).toBe(false)
     expect(shallowEqual({ a: false, test: false }, undefined)).toBe(false)
@@ -50,6 +58,26 @@ describe("MutableSelectable", () => {
 
     expect(callback).toBeCalledTimes(1)
     expect(callback).toBeCalledWith(0, undefined)
+  })
+
+  it("replaces state when returning a new value", () => {
+    let callback = jest.fn()
+
+    const initialState = {
+      count: 0,
+    }
+    let store = new MutableSelectable(initialState)
+
+    store.select((state) => state.count, callback)
+
+    const nextState = {
+      count: 1,
+    }
+    store.set((state) => nextState)
+
+    expect(callback).toBeCalledTimes(2)
+    expect(callback).toBeCalledWith(0, undefined)
+    expect(callback).toBeCalledWith(1, 0)
   })
 
   it("Accepts different equality functions", () => {
@@ -74,6 +102,29 @@ describe("MutableSelectable", () => {
     expect(callback).toBeCalledTimes(2)
     expect(callback).toBeCalledWith(0)
     expect(callback).toBeCalledWith(2)
+  })
+  it(`can force an update`, () => {
+    let callback = jest.fn()
+
+    let store = new MutableSelectable({
+      count: 0,
+    })
+
+    const listener = store.select((state) => state.count, callback)
+
+    store.set((state) => {
+      state.count++
+    })
+
+    expect(callback).toBeCalledTimes(2)
+    expect(callback).toBeCalledWith(0, undefined)
+    expect(callback).toBeCalledWith(1, 0)
+
+    store.state.count++
+    listener.update()
+
+    expect(callback).toBeCalledTimes(3)
+    expect(callback).toBeCalled
   })
   it("Cancels subscriptions", () => {
     let callback = jest.fn()
@@ -218,6 +269,22 @@ describe("MutableSelectable", () => {
     expect(secondCallback).toBeCalledWith([], [1, 2])
   })
 
+  it("Sets state to undefined when returning 'nothing'", () => {
+    let callback = jest.fn()
+    let state = { count: 0 }
+
+    let store = new MutableSelectable<typeof state | undefined>(state)
+
+    store.select((state) => state?.count, callback)
+
+    store.set(() => nothing)
+
+    expect(store.state).toEqual(undefined)
+    expect(callback).toBeCalledTimes(2)
+    expect(callback).toBeCalledWith(0, undefined)
+    expect(callback).toBeCalledWith(undefined, 0)
+  })
+
   it("only flushes once when nesting flush calls", () => {
     let callback = jest.fn()
     let state = { count: 0, likes: 0, users: [{ id: 1 }, { id: 2 }] }
@@ -262,6 +329,23 @@ describe("Selectable", () => {
 
     expect(callback).toBeCalledTimes(1)
     expect(callback).toBeCalledWith(0)
+  })
+  it("allows you to mutate store.state without using the value in the callback", () => {
+    let callback = jest.fn((arg) => {})
+
+    let store = new Selectable({
+      count: 0,
+    })
+
+    store.select((state) => state.count, callback)
+
+    store.set(() => {
+      store.state.count++
+    })
+
+    expect(callback).toBeCalledTimes(2)
+    expect(callback).toBeCalledWith(0)
+    expect(callback).toBeCalledWith(1)
   })
   it("Cancels subscriptions", () => {
     let callback = jest.fn()
@@ -383,6 +467,43 @@ describe("Selectable", () => {
     })
     expect(callback).toBeCalledWith(7)
     expect(callback).toBeCalledTimes(6)
+  })
+
+  it("doesn't run updates when returning undefined and nothing was modified", () => {
+    let callback = jest.fn()
+    let state: any = { value: 1 }
+
+    let store = new Selectable(state)
+
+    store.select(
+      (state) => state.value,
+      (a, b) => callback(a, b)
+    )
+    expect(callback).toBeCalledTimes(1)
+
+    store.set((state) => {
+      state.value = 1
+    })
+
+    expect(store.state).toEqual({ value: 1 })
+    expect(callback).toBeCalledTimes(1)
+    expect(callback).toHaveBeenNthCalledWith(1, state.value, undefined)
+  })
+
+  it("Sets state to undefined when returning 'nothing'", () => {
+    let callback = jest.fn()
+    let state = { count: 0 }
+
+    let store = new Selectable<typeof state | undefined>(state)
+
+    store.select((state) => state?.count, callback)
+
+    store.set(() => nothing)
+
+    expect(store.state).toEqual(undefined)
+    expect(callback).toBeCalledTimes(2)
+    expect(callback).toBeCalledWith(0, undefined)
+    expect(callback).toBeCalledWith(undefined, 0)
   })
 
   it("runs updates when returning undefined", () => {
