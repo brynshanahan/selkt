@@ -1,5 +1,6 @@
 {
   "index": "Introduction",
+  "releases": "Releases",
   "mutable-selectable": "Mutable Selectable",
   "selectable": "Selectable",
   "usage-in-react": "Usage in React",

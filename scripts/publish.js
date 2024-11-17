@@ -15,10 +15,13 @@ function execAsync(cmd) {
 
 execSync(`npm run prod`)
 
-bump(require("path").resolve(__dirname, ".."))
+// bump(require("path").resolve(__dirname, ".."))
 
 projects().map(async (folder) => {
-  bump(folder)
+  if (folder.startsWith(".")) {
+    return
+  }
+  // bump(folder)
   await execAsync(`cd ${folder} && npm run publish`).catch((err) => {
     console.error(err)
   })

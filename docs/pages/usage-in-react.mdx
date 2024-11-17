@@ -3,12 +3,12 @@
 #### Installation
 
 ```bash
-npm install @selkt/react
+npm install @selkt/react use-sync-external-store
 ```
 
 #### Usage
 
-@selkt/react contains one hook, `useSelectable` which takes any `SelectableInterface`, a selector and an optional equality function and returns the selected slice of the state.
+@selkt/react contains one hook, `useSelectable` which takes any [`SelectableInterface`](./selectable-interface.mdx), a selector and an optional equality function and returns the selected slice of the state.
 
 ```jsx
 import { MutableSelectable } from '@selkt/core'
@@ -34,7 +34,7 @@ const App = () => {
   return (
     <div>
       {counter}
-      <button type="button" onClick={}>Increment</button>
+      <button type="button" onClick={increment}>Increment</button>
     </div>
 }
 ```
